@@ -1,0 +1,54 @@
+{{ block title }}
+    Role Assignment
+{{ endblock }}
+
+{{ block content }}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8 text-center">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h4 class="card-title mb-4">Your Role: {{ player_role }}</h4>
+                    
+                    <div class="role-assignments mb-4">
+                        <div class="sender-info mb-3">
+                            <h5>Sender</h5>
+                            <p class="lead">Player {{ sender_id }}</p>
+                        </div>
+                        
+                        <div class="receiver-info">
+                            <h5>Receivers</h5>
+                            <p class="lead">
+                                Players {{ receiver_ids.0 }} and {{ receiver_ids.1 }}
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="alert alert-info" role="alert">
+                        {{ if player_role == 'Sender' }}
+                            You have been selected as the Sender. Your reported number and actual observed number will be shown in the results.
+                        {{ else }}
+                            You are a Receiver. Your points will be based on the Sender's report.
+                        {{ endif }}
+                    </div>
+                </div>
+            </div>
+
+            {{ next_button }}
+        </div>
+    </div>
+</div>
+
+<style>
+    .card {
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        border-radius: 8px;
+        margin-top: 2rem;
+    }
+    .role-assignments {
+        padding: 1rem;
+        background-color: #f8f9fa;
+        border-radius: 8px;
+    }
+</style>
+{{ endblock }}

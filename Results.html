@@ -1,0 +1,29 @@
+{{ block title }}
+    Results
+{{ endblock }}
+
+{{ block content }}
+    <div class="container">
+        <h3>Payoffs</h3>
+        <p>{{group.sender_reported_number}}</p>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th scope="col">Player</th>
+                    <th scope="col">Payoff</th>
+                    <th scope="col">Sender Reported Number</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{ for player in group.get_players }}
+                <tr>
+                    <td>Player {{ player.id_in_group }}</td>
+                    <td>{{ player.payoff }}</td>
+                    <td>{{selected_player.reported_number}}</td>
+                </tr>
+                {{ endfor }}
+            </tbody>
+        </table>
+        {{ next_button }}
+    </div>
+{{ endblock }}

@@ -1,0 +1,224 @@
+{% load otree %}
+
+{% block title %}
+    Ball Number Game
+{% endblock %}
+
+{% block content %}
+<style>
+    /* ... (previous styles remain the same) ... */
+    .ball-container {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 20px;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+    
+    .ball {
+        width: 100px;
+        height: 100px;
+        background-color: #007bff;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin: 10px;
+    }
+    
+    .ball:hover:not(.disabled) {
+        background-color: #0056b3;
+    }
+    
+    .ball.revealed {
+        background-color: #28a745;
+    }
+    
+    .ball.disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+    
+    .number {
+        color: white;
+        font-size: 24px;
+        font-weight: bold;
+    }
+
+    .observed-number {
+        font-size: 18px;
+        font-weight: bold;
+        color: #28a745;
+        margin-bottom: 15px;
+        display: none;
+    }
+
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0,0,0,0.5);
+    }
+
+    .modal-content {
+        background-color: #fefefe;
+        margin: 15% auto;
+        padding: 20px;
+        border: 1px solid #888;
+        width: 80%;
+        max-width: 500px;
+        border-radius: 5px;
+    }
+
+    .modal-buttons {
+        margin-top: 20px;
+        text-align: right;
+    }
+
+    .modal-buttons button {
+        margin-left: 10px;
+    }
+</style>
+
+<div class="observed-number" id="observed_number_display">
+    Number revealed: <span id="observed_value"></span>
+</div>
+
+<div class="ball-container">
+    {% for ball_number in ball_numbers %}
+        <div class="ball" id="ball_{{ ball_number }}" onclick="handleClick({{ ball_number }})">
+            <span class="number" id="number_{{ ball_number }}"></span>
+        </div>
+    {% endfor %}
+</div>
+
+<!-- Keep the original oTree form -->
+<form id="form"  method="post">
+   
+    <div class="input-section">
+        {{ formfields }}
+    </div>
+
+    <button id="next_button" type="button" class="btn btn-primary" disabled onclick="showConfirmationDialog()">
+        Next
+    </button>
+</form>
+
+<!-- Confirmation Modal -->
+<div id="confirmationModal" class="modal">
+    <div class="modal-content">
+        <h4>Confirm Your Report</h4>
+        <p id="confirmationText"></p>
+        <div class="modal-buttons">
+            <button class="btn btn-secondary" onclick="cancelConfirmation()">No, let me change</button>
+            <button class="btn btn-primary" onclick="confirmAndProceed()">Yes, proceed</button>
+        </div>
+    </div>
+</div>
+
+{% block scripts %}
+<script>
+    let observedNumber = null;
+    let reportedNumber = null;
+
+    // Prevent form from submitting when enter key is pressed
+    document.getElementById('form').onsubmit = function(e) {
+        e.preventDefault();
+        return false;
+    };
+
+    function handleClick(index) {
+        const ball = document.getElementById(`ball_${index}`);
+        const numberSpan = document.getElementById(`number_${index}`);
+        
+        if (!ball.classList.contains('disabled') && !ball.classList.contains('revealed')) {
+            liveSend({'clicked_index': index});
+            console.log('Ball clicked:', index);
+        }
+    }
+    
+    function liveRecv(data) {
+        console.log('Received data:', data);
+        
+        if (data.number !== undefined) {
+            const ball = document.getElementById(`ball_${data.index}`);
+            const numberSpan = document.getElementById(`number_${data.index}`);
+            
+            numberSpan.textContent = data.number;
+            ball.classList.add('revealed');
+            
+            observedNumber = data.number;
+            document.getElementById('observed_value').textContent = data.number;
+            document.getElementById('observed_number_display').style.display = 'block';
+            
+            document.querySelectorAll('.ball').forEach((b, i) => {
+                if (i !== data.index) {
+                    b.classList.add('disabled');
+                }
+            });
+
+            document.getElementById('next_button').disabled = false;
+        }
+    }
+
+    function showConfirmationDialog() {
+        // Get the reported value from the form
+        const reportInput = document.querySelector('input[type="number"]');
+        reportedNumber = parseInt(reportInput.value);
+
+        if (isNaN(reportedNumber)) {
+            alert("Please enter a valid number to report.");
+            return;
+        }
+
+        const modal = document.getElementById('confirmationModal');
+        const confirmationText = document.getElementById('confirmationText');
+        
+        confirmationText.innerHTML = `You are reporting ${reportedNumber}.<br>
+            This will give you ${reportedNumber} points and your opponent ${11 - reportedNumber} points.<br>
+            Are you sure you want to proceed?`;
+        
+        modal.style.display = 'block';
+    }
+
+    function cancelConfirmation() {
+        const modal = document.getElementById('confirmationModal');
+        modal.style.display = 'none';
+        
+        // Clear the input field and focus on it
+        const reportInput = document.querySelector('input[type="number"]');
+        reportInput.value = '';
+        reportInput.focus();
+    }
+
+    function confirmAndProceed() {
+        // Get the form
+        const form = document.getElementById('form');
+        
+        // Remove the onsubmit handler that's preventing submission
+        form.onsubmit = null;
+        
+        // Hide the modal
+        document.getElementById('confirmationModal').style.display = 'none';
+        
+        // Submit the form using oTree's form
+        form.submit();
+    }
+
+    // Close modal if user clicks outside of it
+    window.onclick = function(event) {
+        const modal = document.getElementById('confirmationModal');
+        if (event.target == modal) {
+            modal.style.display = 'none';
+        }
+    }
+</script>
+{% endblock %}
+{% endblock %}

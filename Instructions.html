@@ -1,0 +1,78 @@
+{{ block title }}
+    Instructions
+{{ endblock }}
+
+{{ block content }}
+<div class="container">
+    <div class="card">
+        <div class="card-body">
+            <h3>Welcome to the Hidden Ball Game!</h3>
+            
+            <h4>Game Structure:</h4>
+            <ul>
+                <li>You are in a group with {{ players_per_group }} players (including yourself)</li>
+                <li>Each player will play independently</li>
+                <li>There are {{ num_balls }} balls numbered from 1 to {{ num_balls }}</li>
+            </ul>
+
+            <h4>How to Play:</h4>
+            <ol>
+                <li>Click on any ball to reveal its number</li>
+                <li>After seeing the number, you must report a number between 1 and {{ num_balls }}</li>
+                <li>Your reported number can be the same or different from what you observed</li>
+            </ol>
+
+            <h4>Payoff Calculation:</h4>
+            <ul>
+                <li><strong>Your payoff:</strong>
+                    <ul>
+                        <li>The number you report will be your points earned</li>
+                    </ul>
+                </li>
+                <li><strong>Other players' payoff:</strong>
+                    <ul>
+                        <li>They will receive (11 - your reported number) points from your report</li>
+                    </ul>
+                </li>
+            </ul>
+
+            <h4>Results Display:</h4>
+            <ul>
+                <li>At the end of the game, one player will be randomly selected</li>
+                <li>All players will see:
+                    <ul>
+                        <li>The selected player's observed number</li>
+                        <li>The selected player's reported number</li>
+                        <li>Payoff of all the players</li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    {{ next_button }}
+</div>
+
+<style>
+    .card {
+        margin: 2em 0;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .card-body {
+        padding: 2em;
+    }
+    h4 {
+        color: #2c3e50;
+        margin-top: 1.5em;
+    }
+    ul, ol {
+        margin-bottom: 1em;
+    }
+    li {
+        margin-bottom: 0.5em;
+    }
+    .alert {
+        margin-top: 2em;
+    }
+</style>
+{{ endblock }}
