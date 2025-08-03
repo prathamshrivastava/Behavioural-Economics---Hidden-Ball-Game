@@ -38,6 +38,9 @@ The game is designed to analyze:
 - After submission, rewards are computed and displayed.
 
 ---
+## Game Arena
+
+![Game Arena](https://github.com/prathamshrivastava/Behavioural-Economics---Hidden-Ball-Game/blob/main/Game%20Arena.png)
 
 ##  Project Structure
 
